@@ -3,11 +3,10 @@ import 'package:exenses_tracker_flutter/widgets/chart.dart';
 import 'package:exenses_tracker_flutter/widgets/new_transaction.dart';
 import 'package:exenses_tracker_flutter/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
-  await initializeDateFormatting();
   Intl.defaultLocale = 'ru';
   runApp(const MyApp());
 }
@@ -20,6 +19,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expenses tracker',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ru', ''),
+      ],
       theme: ThemeData(
         primarySwatch: Colors.purple,
         fontFamily: 'Montserrat',
@@ -53,12 +60,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _transactions = [];
 
-  void _onAddTransaction(title, amount) {
+  void _onAddTransaction(title, amount, date) {
     final newTransaction = Transaction(
       id: DateTime.now().toString(),
       title: title,
       amount: amount,
-      date: DateTime.now(),
+      date: date,
     );
     setState(() {
       _transactions.add(newTransaction);
@@ -69,6 +76,11 @@ class _HomePageState extends State<HomePage> {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(10.0),
+          ),
+        ),
         builder: (_) {
           return SingleChildScrollView(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
