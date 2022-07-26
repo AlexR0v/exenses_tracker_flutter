@@ -1,5 +1,7 @@
-import 'package:exenses_tracker_flutter/card_transaction.dart';
 import 'package:exenses_tracker_flutter/transaction.dart';
+import 'package:exenses_tracker_flutter/widgets/chart.dart';
+import 'package:exenses_tracker_flutter/widgets/new_transaction.dart';
+import 'package:exenses_tracker_flutter/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -20,62 +22,104 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.purple,
+        fontFamily: 'Montserrat',
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Montserrat',
+            fontSize: 18,
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Montserrat',
+            fontSize: 18,
+          ),
+        ),
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  final List<Transaction> transaction = [
-    Transaction(
-      id: 't1',
-      title: 'Хлеб',
-      amount: 40.50,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Молоко',
-      amount: 70,
-      date: DateTime.now(),
-    ),
-  ];
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
-  HomePage({Key? key}) : super(key: key);
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<Transaction> _transactions = [];
+
+  void _onAddTransaction(title, amount) {
+    final newTransaction = Transaction(
+      id: DateTime.now().toString(),
+      title: title,
+      amount: amount,
+      date: DateTime.now(),
+    );
+    setState(() {
+      _transactions.add(newTransaction);
+    });
+  }
+
+  void onOpenAddModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: GestureDetector(
+              onTap: () {},
+              behavior: HitTestBehavior.opaque,
+              child: NewTransaction(onAddTransaction: _onAddTransaction),
+            ),
+          );
+        });
+  }
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((element) {
+      return element.date.isAfter(DateTime.now().subtract(const Duration(days: 7)));
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Куда они исчезли?'),
-      ),
-      body: Column(
-        children: <Widget>[
-          const SizedBox(
-            width: double.infinity,
-            child: Card(
-              elevation: 5,
-              color: Colors.purple,
-              shadowColor: Colors.purple,
-              child: Text('CHART'),
-            ),
+        title: const Text('Персональные расходы'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () => onOpenAddModal(context),
+            icon: const Icon(Icons.add),
           ),
-          SizedBox(
-            width: double.infinity,
-            child: Card(
-              elevation: 5,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    ...transaction.map((tr) => CardTransaction(title: tr.title, amount: tr.amount, date: tr.date)),
-                  ],
-                ),
+        ],
+      ),
+      body: Container(
+        margin: const EdgeInsets.all(8),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Chart(recentTransactions: _recentTransactions),
+            ),
+            Expanded(
+              flex: 4,
+              child: TransactionList(
+                transactions: _transactions,
               ),
             ),
-          )
-        ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => onOpenAddModal(context),
+        child: const Icon(Icons.add),
       ),
     );
   }

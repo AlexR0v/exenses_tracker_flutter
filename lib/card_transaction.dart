@@ -33,12 +33,14 @@ class CardTransaction extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        '$amount',
-                        style: TextStyle(
-                          fontSize: amount > 99999.99 ? 10 : 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple,
+                      FittedBox(
+                        child: Text(
+                          (amount % 1 == 0) ? amount.toStringAsFixed(0) : amount.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
                         ),
                       ),
                       const Text(
@@ -63,6 +65,7 @@ class CardTransaction extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Montserrat',
                       ),
                     ),
                   ),
