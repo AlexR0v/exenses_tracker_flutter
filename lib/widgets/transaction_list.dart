@@ -1,11 +1,12 @@
-import 'package:exenses_tracker_flutter/card_transaction.dart';
-import 'package:exenses_tracker_flutter/transaction.dart';
+import 'package:exenses_tracker_flutter/models/transaction.dart';
+import 'package:exenses_tracker_flutter/widgets/card_transaction.dart';
 import 'package:flutter/material.dart';
 
 class TransactionList extends StatelessWidget {
-  final List<Transaction> transactions;
+  const TransactionList({Key? key, required this.transactions, required this.onDeleteTransaction}) : super(key: key);
 
-  const TransactionList({Key? key, required this.transactions}) : super(key: key);
+  final List<Transaction> transactions;
+  final void Function(String) onDeleteTransaction;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +42,12 @@ class TransactionList extends StatelessWidget {
             : ListView.builder(
                 itemBuilder: (ctx, index) {
                   return CardTransaction(
-                      title: transactions[index].title,
-                      amount: transactions[index].amount,
-                      date: transactions[index].date);
+                    title: transactions[index].title,
+                    amount: transactions[index].amount,
+                    date: transactions[index].date,
+                    id: transactions[index].id,
+                    onDeleteTransaction: onDeleteTransaction,
+                  );
                 },
                 itemCount: transactions.length,
               ),

@@ -1,4 +1,4 @@
-import 'package:exenses_tracker_flutter/transaction.dart';
+import 'package:exenses_tracker_flutter/models/transaction.dart';
 import 'package:exenses_tracker_flutter/widgets/chart.dart';
 import 'package:exenses_tracker_flutter/widgets/new_transaction.dart';
 import 'package:exenses_tracker_flutter/widgets/transaction_list.dart';
@@ -72,6 +72,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onDeleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((element) => element.id == id);
+    });
+  }
+
   void onOpenAddModal(BuildContext context) {
     showModalBottomSheet(
         context: context,
@@ -124,6 +130,7 @@ class _HomePageState extends State<HomePage> {
               flex: 4,
               child: TransactionList(
                 transactions: _transactions,
+                onDeleteTransaction: _onDeleteTransaction,
               ),
             ),
           ],
