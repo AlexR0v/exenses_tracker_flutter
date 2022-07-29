@@ -126,22 +126,22 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
+    double mediaHeight(double val) {
+      return (MediaQuery.of(context).size.height - appbar.preferredSize.height - MediaQuery.of(context).padding.top) *
+          val;
+    }
+
     return Scaffold(
       appBar: appbar,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             SizedBox(
-                height: (MediaQuery.of(context).size.height -
-                        appbar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.2,
-                child: Chart(recentTransactions: _recentTransactions)),
+              height: mediaHeight(0.2),
+              child: Chart(recentTransactions: _recentTransactions),
+            ),
             SizedBox(
-              height: (MediaQuery.of(context).size.height -
-                      appbar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.8,
+              height: mediaHeight(0.8),
               child: TransactionList(
                 transactions: _transactions,
                 onDeleteTransaction: _onDeleteTransaction,
