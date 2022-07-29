@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:exenses_tracker_flutter/models/transaction.dart';
 import 'package:exenses_tracker_flutter/widgets/chart.dart';
 import 'package:exenses_tracker_flutter/widgets/new_transaction.dart';
 import 'package:exenses_tracker_flutter/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-void main() async {
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   Intl.defaultLocale = 'ru';
   runApp(const MyApp());
 }
@@ -107,27 +115,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appbar = AppBar(
+      title: const Text('Персональные расходы'),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () => onOpenAddModal(context),
+          icon: const Icon(Icons.add),
+        ),
+      ],
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Персональные расходы'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () => onOpenAddModal(context),
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: Container(
-        margin: const EdgeInsets.all(8),
+      appBar: appbar,
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Chart(recentTransactions: _recentTransactions),
-            ),
-            Expanded(
-              flex: 4,
+            SizedBox(
+                height: (MediaQuery.of(context).size.height -
+                        appbar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.2,
+                child: Chart(recentTransactions: _recentTransactions)),
+            SizedBox(
+              height: (MediaQuery.of(context).size.height -
+                      appbar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.8,
               child: TransactionList(
                 transactions: _transactions,
                 onDeleteTransaction: _onDeleteTransaction,
@@ -136,10 +150,12 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => onOpenAddModal(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: Platform.isIOS
+          ? null
+          : FloatingActionButton(
+              onPressed: () => onOpenAddModal(context),
+              child: const Icon(Icons.add),
+            ),
     );
   }
 }
